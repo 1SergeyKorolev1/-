@@ -1,41 +1,41 @@
 import json
 
 
-def app_operation(operations_json):
-    five_operations = get_five_last_operations(operations_json)
-    for operation in five_operations:
-        date = '.'.join((operation['date'].split('T'))[0].split('-'))
-        num_1, num_2, num_3, num_4 = get_from(operation)
-        amount = operation['operationAmount']['amount']
-        print(f'\n{date} {operation['description']}')
-        if num_3 == 1:
-            print(f'{num_1} {num_2} -> Счет {num_4}')
-        else:
-            print(f'Счет {num_2}')
-        print(f'{amount} руб.')
-
-
-def get_five_last_operations(operations_json):
+def get_five_operations(operations_json):
     with open(operations_json, encoding='utf-8') as f:
         list_operation = json.load(f)
         five_last_operations = list_operation[-5:]
         five_last_operations.reverse()
         return five_last_operations
 
-def get_from(operation):
-    if len(operation) > 6:
-        len_from = len(operation['from'].split()[1])
-        num_1 = operation['from'].split()[0]
-        num_2 = grouper_account(operation['to'].split()[1])
-        if len_from == 16:
-            num = grouper_card(operation['from'].split()[1])
-            return [num_1, num, 1, num_2]
-        if len_from == 20:
-            num = grouper_account(operation['from'].split()[1])
-            return [num_1, num, 1, num_2]
+def get_from_and_to(operation):
+    to_list = operation['to'].split()
+    if len(to_list) == 3:
+        to_num = to_list[2]
+        name_2 = f'{to_list[0]} {to_list[1]}'
     else:
-        num = grouper_account(operation['to'].split()[1])
-        return [0, num, 0, 0]
+        to_num = to_list[1]
+        name_2 = to_list[0]
+    if len(to_num) == 16:
+        num_2 = grouper_card(to_num)
+    else:
+        num_2 = grouper_account(to_num)
+    if len(operation) > 6:
+        from_list = operation['from'].split()
+        if len(from_list) == 3:
+            from_num = from_list[2]
+            name = f'{from_list[0]} {from_list[1]}'
+        else:
+            from_num = from_list[1]
+            name = from_list[0]
+        if len(from_num) == 16:
+            num = grouper_card(from_num)
+            return [name, num, num_2, name_2]
+        else:
+            num = grouper_account(from_num)
+            return [name, num, num_2, name_2]
+    else:
+        return [0, 0, num_2, name_2]
 
 def grouper_card(iterable):
     list_ = []
@@ -58,6 +58,11 @@ def grouper_account(iterable):
         elif i > 15:
             list_.append(iterable[i])
     return ''.join(list_)
+
+def get_date_reverse(operation):
+    date_ = (operation['date'].split('T'))[0].split('-')
+    date_.reverse()
+    return '.'.join(date_)
 
 
 
