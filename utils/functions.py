@@ -1,11 +1,21 @@
 import json
 
+
 def get_five_operations(operations_json):
     with open(operations_json, encoding='utf-8') as f:
         list_operation = json.load(f)
-        five_last_operations = list_operation[-5:]
+
+        def sort_(e):
+            if e == {}:
+                return tuple(map(int, [2019, 8, 26]))
+            else:
+                return tuple(map(int, (e['date'].split('T'))[0].split('-')))
+
+        sorted_date = sorted(list_operation, key=sort_)
+        five_last_operations = sorted_date[-5:]
         five_last_operations.reverse()
         return five_last_operations
+
 
 def get_from_and_to(operation):
     to_num = operation['to'].split()[-1]
@@ -24,6 +34,7 @@ def get_from_and_to(operation):
         return [from_name, from_num_hide, to_num_hide, to_name]
     return [0, 0, to_num_hide, to_name]
 
+
 def grouper_card(iterable):
     list_ = []
     for i in range(0, 16):
@@ -37,6 +48,7 @@ def grouper_card(iterable):
                 list_.append(' ')
     return ''.join(list_)
 
+
 def grouper_account(iterable):
     list_ = []
     for i in range(0, 20):
@@ -46,10 +58,8 @@ def grouper_account(iterable):
             list_.append(iterable[i])
     return ''.join(list_)
 
+
 def get_date_reverse(operation):
     date_ = (operation['date'].split('T'))[0].split('-')
     date_.reverse()
     return '.'.join(date_)
-
-
-

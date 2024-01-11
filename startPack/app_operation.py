@@ -7,7 +7,7 @@ def app_operation(operations_json):
         from_name, from_num_hide, to_num_hide, to_name = functions.get_from_and_to(operation)
         amount = operation['operationAmount']['amount']
         currency = operation['operationAmount']['currency']['name']
-        print(f'\n{date} {operation['description']}')
+        print(f'\n{date} {operation["description"]}')
         if from_name != 0:
             print(f'{from_name} {from_num_hide} -> {to_name} {to_num_hide}')
         else:
